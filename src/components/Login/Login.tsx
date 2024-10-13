@@ -154,19 +154,6 @@ export function Login({ fw }: Params) {
             <Button disabled={isLoading ? true : false} variant="gradient" onClick={handleLogin} fullWidth>
               Entrar
             </Button>
-            <Typography variant="small" className="mt-4 flex justify-center">
-              Ainda não tem conta?
-              <Typography
-                as="a"
-                href="#signup"
-                variant="small"
-                color="blue-gray"
-                className="ml-1 font-bold"
-                onClick={handleOpen}
-              >
-                Cadastrar
-              </Typography>
-            </Typography>
           </CardFooter>
         </Card>
       </Dialog>
