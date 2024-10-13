@@ -1,6 +1,6 @@
 INSTALAÇÃO DO PROJETO/INICIALIZAÇÃO
 - Clone o repositório em sua máquina
-- Abra um prompt de comando no dentro diretório da aplicação clonada
+- Abra um prompt de comando no diretório da aplicação clonada
 - Digite o comando "yarn install"
 - Logo após digite o comando "yarn dev"
 - Abra o navegador e acesse: http://localhost:5173/
