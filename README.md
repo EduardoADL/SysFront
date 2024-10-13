@@ -1,7 +1,7 @@
 INSTALAÇÃO DO PROJETO/INICIALIZAÇÃO
 - Clone o repositório em sua máquina
 - Abra um prompt de comando no diretório da aplicação clonada
-- Digite o comando "yarn install"
+- Digite o comando "yarn install" ( necessário ter yarn instalado na máquina )
 - Logo após digite o comando "yarn dev"
 - Abra o navegador e acesse: http://localhost:5173/
 - ( obs: Para o funcionamento correto da aplicação é necessário que o backend esteja funcionando na porta 3000 da sua máquina => https://github.com/camargo-leonardo/mock-api)
