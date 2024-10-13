@@ -33,6 +33,7 @@ ADENDOS
   - Foi necessário configurar o cors no backend para a utilização do axios. Configuração adicionada a seguir:
     
       ```
+      const cors = require("cors");
       app.use(cors({
         origin: 'http://localhost:5173',
         methods: ['GET', 'POST', 'PUT', 'DELETE'],
