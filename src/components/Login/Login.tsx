@@ -7,26 +7,27 @@ import {
   CardFooter,
   Typography,
   Input,
-  Checkbox,
 } from "@material-tailwind/react";
 import { IUserLogin, IUserLoginResponse } from "../../interfaces/AuthInterface";
 import { toast } from 'react-toastify';
 import { loginUser } from "../../services/Auth";
 import { useNavigate } from "react-router-dom";
+import { useBalance } from "../../context/useBalance";
 
-interface Params{
-    fw:boolean
+interface Params {
+  fw: boolean
 }
- 
-export function Login ({fw}:Params) {
-    const navigate = useNavigate();
-    const [open, setOpen] = useState(false);
-    const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [errors, setErrors] = useState<{ [key: string]: string }>({});
-    const [data, setData] = useState<IUserLogin>({
-        email: "",
-        password: "",
-    });
+
+export function Login({ fw }: Params) {
+  const navigate = useNavigate();
+  const { setBalance } = useBalance();
+  const [open, setOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [data, setData] = useState<IUserLogin>({
+    email: "",
+    password: "",
+  });
 
   const handleOpen = () => {
     setOpen((cur) => !cur);
@@ -67,7 +68,7 @@ export function Login ({fw}:Params) {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
- 
+
 
   const handleLogin = async () => {
     if (!validateFields()) {
@@ -76,32 +77,35 @@ export function Login ({fw}:Params) {
     setIsLoading(true);
     const load = toast.loading('Fazendo Login');
     try {
-      const response:IUserLoginResponse = await loginUser(data);
+      const response: IUserLoginResponse = await loginUser(data);
       console.log("Usuário logado:", response);
       setOpen(false);
-      toast.update(load, { render: "Login bem sucedido!", type: "success", isLoading: false, autoClose:3000 });
-      setIsLoading(false);
-      resetForm();
+
       localStorage.setItem('isAuthenticated', 'true');
       localStorage.setItem('token', response.accessToken);
+      setBalance(response.balance);
+      
+      toast.update(load, { render: "Login bem sucedido!", type: "success", isLoading: false, autoClose: 3000 });
       navigate('/landing')
     } catch (error) {
-        toast.update(load, { render: "Algo deu Errado", type: "error", isLoading: false, autoClose:3000 });
-        setIsLoading(false);
+      toast.update(load, { render: "Algo deu Errado", type: "error", isLoading: false, autoClose: 3000 });
       console.error("Erro ao entrar na conta", error);
       if (error instanceof Error) {
         console.error('Erro ao entrar na conta:', error.message);
       }
+    } finally {
+      setIsLoading(false);
+      resetForm();
     }
   };
 
   return (
     <>
-      <Button  
+      <Button
         fullWidth={fw}
         variant="outlined"
         size="sm"
-        className="" 
+        className=""
         onClick={handleOpen}>Entrar</Button>
       <Dialog
         size="xs"
@@ -124,17 +128,19 @@ export function Login ({fw}:Params) {
             <Typography className="-mb-2" variant="h6">
               Seu E-mail
             </Typography>
-            <Input 
-                label="Email" size="lg"               
-                name="email"
-                onChange={handleInputChange}
-                error={!!errors.email}
+            <Input
+              crossOrigin={undefined}
+              label="Email" size="lg"
+              name="email"
+              onChange={handleInputChange}
+              error={!!errors.email}
             />
             {errors.email && <Typography color="red">{errors.email}</Typography>}
             <Typography className="-mb-2" variant="h6">
               Sua senha
             </Typography>
             <Input
+              crossOrigin={undefined}
               label="Senha"
               size="lg"
               name="password"
@@ -143,9 +149,6 @@ export function Login ({fw}:Params) {
               error={!!errors.password}
             />
             {errors.password && <Typography color="red">{errors.password}</Typography>}
-            <div className="-ml-2.5 -mt-3">
-              <Checkbox label="Lembrar de mim?" />
-            </div>
           </CardBody>
           <CardFooter className="pt-0">
             <Button disabled={isLoading ? true : false} variant="gradient" onClick={handleLogin} fullWidth>

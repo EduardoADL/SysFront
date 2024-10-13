@@ -1,7 +1,7 @@
 import axiosInstance from '../axios.config';
 import axios from 'axios';
 import { notifyError } from '../../utils/notify';
-import { IMyBets, IMyBetsReponse, INewBet } from '../../interfaces/BetsInterface';
+import { ICancelBetResponse, IMyBets, IMyBetsReponse, INewBet, INewBetResponse } from '../../interfaces/BetsInterface';
 
 export const getBets = async (data: IMyBets): Promise<IMyBetsReponse> => {
   try {
@@ -14,12 +14,23 @@ export const getBets = async (data: IMyBets): Promise<IMyBetsReponse> => {
   }
 };
 
-export const newBet = async (data: INewBet) => {
+export const newBet = async (data: INewBet):Promise<INewBetResponse> => {
     try {
       const response = await axiosInstance.post('/bet', data);
       return response.data;
     } catch (error) {
       handleError(error, 'Erro ao criar aposta');
+      throw error;
+    }
+  };
+
+  export const deleteBet = async (id: string):Promise<ICancelBetResponse> => {
+    try {
+      const response = await axiosInstance.delete(`/my-bet/${id}`);
+      return response.data;
+    } catch (error) {
+      handleError(error, 'Erro ao criar aposta');
+      throw error;
     }
   };
 

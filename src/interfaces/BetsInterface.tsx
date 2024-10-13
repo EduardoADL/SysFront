@@ -23,3 +23,15 @@ export interface IMyBetsReponseData{
 export interface INewBet{
     amount: number,
 }
+export interface INewBetResponse{
+    transactionId: string,
+    currency: string,
+    balance: number,
+    winAmount: number
+}
+
+export interface ICancelBetResponse{
+        transactionId: string,
+        balance: number,
+        currency: string
+}

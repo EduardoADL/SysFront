@@ -172,11 +172,11 @@ export function SignUp({ fw }: Params) {
             {errors.confirmPassword && <Typography color="red">{errors.confirmPassword}</Typography>}
           </CardBody>
           <CardFooter className="flex pt-0 gap-x-2">
-            <Button disabled={isLoading ? true : false} variant="outlined" onClick={handleCreateUser} fullWidth>
-              Criar
-            </Button>
-            <Button variant="gradient" onClick={handleOpen} fullWidth>
+            <Button variant="outlined" onClick={handleOpen} fullWidth>
               Cancelar
+            </Button>
+            <Button disabled={isLoading ? true : false} variant="gradient" onClick={handleCreateUser} fullWidth>
+              Criar
             </Button>
           </CardFooter>
         </Card>
