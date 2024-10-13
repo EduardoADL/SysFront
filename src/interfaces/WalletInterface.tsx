@@ -11,3 +11,10 @@ export interface IWalletReponseData{
     amount: number,
     type: string
 }
+
+export interface IWallet{
+    id?:string;
+    type?:string;
+    page:number;
+    limit:number;
+}

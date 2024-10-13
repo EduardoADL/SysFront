@@ -1,4 +1,4 @@
-import { Card, Input, Typography } from "@material-tailwind/react";
+import { Card, CardBody, Dialog, Input, Typography } from "@material-tailwind/react";
 import idIcon from '../../assets/img/svg/id-icon.svg'
 import { FC, useEffect, useState } from "react";
 import { formatDateTime } from "../../utils/formatDateTime";
@@ -9,6 +9,7 @@ import {
 import { toast } from "react-toastify";
 import { IWalletReponse } from "../../interfaces/WalletInterface";
 import { getTransactions } from "../../services/wallet";
+import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 
 interface ChildComponentProps {
     onReturn: () => void;
@@ -17,6 +18,8 @@ interface ChildComponentProps {
 const TABLE_HEAD = ["Identificador", "Valor", "Tipo"];
 const Wallet: FC<ChildComponentProps> = ({ onReturn }) => {
     const [idSearch, setIdSearch] = useState<string>("");
+    const [filter, setFilter] = useState<string | undefined>("");
+    const [openFilter, setOpenFilter] = useState<boolean>(false);
     const [pagesTotal, setPagesTotal] = useState<number>(1);
     const [dataWallet, setDataWallet] = useState<IWalletReponse>({
         data: [
@@ -36,7 +39,7 @@ const Wallet: FC<ChildComponentProps> = ({ onReturn }) => {
     }
     const fetchWallet = async (page: number, limit: number, id?: string, status?: string) => {
         try {
-            const response: IWalletReponse = await getTransactions({ id: id, status: status, page: page, limit: limit });
+            const response: IWalletReponse = await getTransactions({ id: id, type: status, page: page, limit: limit });
             setDataWallet(response);
             setPagesTotal(formatPagination(response.total / 15))
         } catch (e) {
@@ -51,13 +54,13 @@ const Wallet: FC<ChildComponentProps> = ({ onReturn }) => {
             return
         }
         if (dataWallet.page < pagesTotal && page === 'next') {
-            fetchWallet(dataWallet.page + 1, 15)
+            fetchWallet(dataWallet.page + 1, 15, undefined, filter)
         } else if (dataWallet.page < pagesTotal && page === 'last') {
-            fetchWallet(pagesTotal, 15)
+            fetchWallet(pagesTotal, 15, undefined, filter)
         } else if (dataWallet.page > 1 && page === 'back') {
-            fetchWallet(dataWallet.page - 1, 15)
+            fetchWallet(dataWallet.page - 1, 15, undefined, filter)
         } else if (dataWallet.page > 1 && page === 'first') {
-            fetchWallet(1, 15)
+            fetchWallet(1, 15, undefined, filter)
         }
     }
 
@@ -68,6 +71,16 @@ const Wallet: FC<ChildComponentProps> = ({ onReturn }) => {
 
         fetchWallet(1, 15, idSearch);
     }
+
+    const searchByType = (type: 'bet' | 'win' | 'cancel'| undefined) => {
+        fetchWallet(1, 15, undefined, type);
+        setFilter(type)
+        handleOpenFilter();
+    }
+
+    const handleOpenFilter = () => {
+        setOpenFilter(!openFilter)
+    };
 
     useEffect(() => {
         fetchWallet(1, 15);
@@ -81,23 +94,30 @@ const Wallet: FC<ChildComponentProps> = ({ onReturn }) => {
     return (
         <>
             <div className="flex w-10/12 max-w-[1140px] items-center justify-between px-2 py-2 my-[1%] bg-white rounded-xl flex-wrap gap-2">
-                <div className="flex gap-2 flex-wrap">
+                <div className="flex gap-2 w-full lg:w-auto">
                     <div className="w-full md:w-72 flex ">
                         <Input
+                            crossOrigin={undefined}
                             label="Procurar id"
                             onChange={(e) => setIdSearch(e.target.value)}
                         />
                     </div>
                     <Button onClick={() => search()} className="flex items-center" size="sm">
-                        Buscar
+                        <MagnifyingGlassIcon className="h-5 w-5" />
                     </Button>
                 </div>
-                <Button onClick={onReturn} color="green" className="flex items-center  justify-center" size="sm">
-                    Voltar para apostas
-                </Button>
+                <div className="flex gap-2 flex-col lg:flex-row w-full lg:w-auto">
+                    <Button onClick={handleOpenFilter} className="flex items-center" size="sm">
+                        FIltro
+                    </Button>
+                    <Button onClick={onReturn} color="green" className="flex items-center" size="sm">
+                        Voltar para apostas
+                    </Button>
+                </div>
             </div>
-            <div className="flex items-center justify-center max-w-[1140px] w-full mb-[2%]">
-                <Card className="h-full w-10/12 lg:w-full overflow-x-scroll p-4">
+            <div className="flex items-center justify-center max-w-[1140px] w-10/12  mb-[2%]">
+                <Card className="h-full w-full  lg:w-full overflow-x-auto p-4">
+                { dataWallet.data.length > 0 ? (<>
                     <table className="w-full min-w-max table-auto text-left">
                         <thead>
                             <tr>
@@ -115,7 +135,7 @@ const Wallet: FC<ChildComponentProps> = ({ onReturn }) => {
                             </tr>
                         </thead>
                         <tbody>
-                            {dataWallet.data.map(({ id, createdAt, amount, type }, index) => (
+                            {dataWallet.data.map(({ id, createdAt, amount, type }) => (
                                 <tr key={id} className="border-b border-blue-gray-100">
                                     <td className="p-4 flex gap-x-4">
                                         <img src={idIcon} alt="icon" className="w-[32px]" />
@@ -153,8 +173,34 @@ const Wallet: FC<ChildComponentProps> = ({ onReturn }) => {
                             <button onClick={() => paginationHandler('last')} className="bg-green-500 px-2 rounded-md text-white">{'>>'}</button>
                         </div>
                     </div>
+                    </>):(<div className="w-full flex items-center justify-center h-96">
+                        <p className="font-lethalforce text-[16px] lg:text-4xl my-[2%] lg:my-[2%] bg-gradient-to-b from-green-400 to-green-800 inline-block text-transparent bg-clip-text" >Nenhum dado encontrado</p>
+                    </div>)}
                 </Card>
             </div>
+            <Dialog
+                size="xs"
+                open={openFilter}
+                handler={handleOpenFilter}
+                className="bg-transparent shadow-none"
+            >
+                <Card className="mx-auto w-full max-w-[24rem] max-h-[600px] lg:max-h-full overflow-auto">
+                    <CardBody className="flex flex-col gap-4">
+                        <Button onClick={() => searchByType(undefined)} variant="gradient" fullWidth>
+                            Todos
+                        </Button>
+                        <Button onClick={() => searchByType('bet')} color="red" variant="gradient" fullWidth>
+                            Apostado
+                        </Button>
+                        <Button onClick={() => searchByType('win')} color="green" variant="gradient" fullWidth>
+                            Ganho
+                        </Button>
+                        <Button onClick={() => searchByType('cancel')} color='orange' variant="gradient" fullWidth>
+                            cancelado
+                        </Button>
+                    </CardBody>
+                </Card>
+            </Dialog>
         </>
     )
 }

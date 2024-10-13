@@ -1,10 +1,9 @@
 import axiosInstance from '../axios.config';
 import axios from 'axios';
 import { notifyError } from '../../utils/notify';
-import { IMyBets} from '../../interfaces/BetsInterface';
-import { IWalletReponse } from '../../interfaces/WalletInterface';
+import { IWallet, IWalletReponse } from '../../interfaces/WalletInterface';
 
-export const getTransactions = async (data: IMyBets): Promise<IWalletReponse> => {
+export const getTransactions = async (data: IWallet): Promise<IWalletReponse> => {
   try {
     const response = await axiosInstance.get('/my-transactions', {params: data});
     console.log(response);

@@ -31,31 +31,27 @@ const Menu = () => {
   }, []);
 
   return (
-    <Navbar className="mx-auto max-w-screen-xl px-4 py-2 lg:px-8 lg:py-4 bg-opacity-100">
+    <Navbar className="mx-auto max-w-screen-xl px-4 py-2 bg-opacity-100 mt-4 w-10/12 ">
       <div className="container mx-auto flex items-center justify-between text-blue-gray-900">
         <Typography
           href="#"
-          className="mr-4 cursor-pointer py-1.5 font-lethalforce text-xl"
+          className="mr-4 cursor-pointer py-1.5 font-lethalforce text-xs lg:text-xl"
         >
           <span className="text-green-500">Let's</span> Bet
         </Typography>
+        {isAuthenticated ? (
+        <Typography
+          href="#"
+          className="mr-4 cursor-pointer py-1.5 font-normal text-xs lg:text-xl"
+        >
+          <span className="text-green-500">SALDO:</span> {formatCurrency(balance)}
+        </Typography>) : null}
         {!isAuthenticated ? (
           <div className="items-center gap-1 hidden lg:flex">
             <Login fw={false} />
             <SignUp fw={false} />
           </div>
-        ) : (<div className="flex gap-3">
-          <Typography
-            as="li"
-            variant="h6"
-            color="black"
-            className="flex items-center gap-x-2 p-1 font-medium"
-          >
-            saldo:
-            <a href="#" className="flex items-center bg-green-400 rounded px-1 border border-green-600 text-white">
-              {formatCurrency(balance)}
-            </a>
-          </Typography>
+        ) : (
           <Button
             variant="gradient"
             size="sm"
@@ -64,7 +60,7 @@ const Menu = () => {
           >
             Sair
           </Button>
-        </div>)}
+        )}
 
         <IconButton
           variant="text"
@@ -73,33 +69,12 @@ const Menu = () => {
           onClick={() => setOpenNav(!openNav)}
         >
           {openNav ? (
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              className="h-6 w-6"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M6 18L18 6M6 6l12 12"
-              />
+            <svg width="40px" height="40px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" transform="rotate(180)">
+              <path d="M5.70711 9.71069C5.31658 10.1012 5.31658 10.7344 5.70711 11.1249L10.5993 16.0123C11.3805 16.7927 12.6463 16.7924 13.4271 16.0117L18.3174 11.1213C18.708 10.7308 18.708 10.0976 18.3174 9.70708C17.9269 9.31655 17.2937 9.31655 16.9032 9.70708L12.7176 13.8927C12.3271 14.2833 11.6939 14.2832 11.3034 13.8927L7.12132 9.71069C6.7308 9.32016 6.09763 9.32016 5.70711 9.71069Z" fill="#0F0F0F" />
             </svg>
           ) : (
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={2}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M4 6h16M4 12h16M4 18h16"
-              />
+            <svg width="40px" height="40px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M5.70711 9.71069C5.31658 10.1012 5.31658 10.7344 5.70711 11.1249L10.5993 16.0123C11.3805 16.7927 12.6463 16.7924 13.4271 16.0117L18.3174 11.1213C18.708 10.7308 18.708 10.0976 18.3174 9.70708C17.9269 9.31655 17.2937 9.31655 16.9032 9.70708L12.7176 13.8927C12.3271 14.2833 11.6939 14.2832 11.3034 13.8927L7.12132 9.71069C6.7308 9.32016 6.09763 9.32016 5.70711 9.71069Z" fill="#0F0F0F" />
             </svg>
           )}
         </IconButton>

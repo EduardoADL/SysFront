@@ -1,5 +1,8 @@
 import Menu from "../../components/Menu/Menu";
 import { Card, CardBody, CardFooter, Input, Typography } from "@material-tailwind/react";
+import {
+    MagnifyingGlassIcon,
+  } from "@heroicons/react/24/outline";
 import bg from '../../assets/img/bg-home.png'
 import cancelIcon from '../../assets/img/svg/cancel-icon.svg'
 import idIcon from '../../assets/img/svg/id-icon.svg'
@@ -25,6 +28,8 @@ const Landing = () => {
     const [id, setId] = useState<string>("");
     const [idSearch, setIdSearch] = useState<string>("");
     const [amount, setAmount] = useState("");
+    const [filter, setFilter] = useState<string | undefined>("");
+    const [openFilter, setOpenFilter] = useState<boolean>(false);
     const [open, setOpen] = useState<boolean>(false);
     const [openNew, setOpenNew] = useState<boolean>(false);
     const [changeComponent, setChangeComponent] = useState<boolean>(false);
@@ -140,13 +145,13 @@ const Landing = () => {
             return
         }
         if (dataBets.page < pagesTotal && page === 'next') {
-            fetchBets(dataBets.page + 1, 15)
+            fetchBets(dataBets.page + 1, 15, undefined, filter)
         } else if (dataBets.page < pagesTotal && page === 'last') {
-            fetchBets(pagesTotal, 15)
+            fetchBets(pagesTotal, 15, undefined, filter)
         } else if (dataBets.page > 1 && page === 'back') {
-            fetchBets(dataBets.page - 1, 15)
+            fetchBets(dataBets.page - 1, 15, undefined, filter)
         } else if (dataBets.page > 1 && page === 'first') {
-            fetchBets(1, 15)
+            fetchBets(1, 15, undefined, filter)
         }
     }
 
@@ -157,6 +162,16 @@ const Landing = () => {
 
         fetchBets(1, 15, idSearch);
     }
+
+    const searchByType = (type: 'lost' | 'win' | 'canceled'| undefined) => {
+        fetchBets(1, 15, undefined, type);
+        setFilter(type)
+        handleOpenFilter();
+    }
+
+    const handleOpenFilter = () => {
+        setOpenFilter(!openFilter)
+    };
 
     useEffect(() => {
         fetchBets(1, 15);
@@ -171,10 +186,11 @@ const Landing = () => {
     return (
         <div className="w-full h-screen min-h-screen flex flex-col items-center bg-cover bg-fixed overflow-auto" style={{ backgroundImage: `url(${bg})` }} >
             <Menu />
-            <p className="font-lethalforce text-[18px] lg:text-6xl my-[8%] lg:my-[2%] bg-gradient-to-b from-green-400 to-green-800 inline-block text-transparent bg-clip-text" >Central de Apostas</p>
+            <p className="font-lethalforce text-[18px] lg:text-6xl my-[4%] lg:my-[2%] bg-gradient-to-b from-green-400 to-green-800 inline-block text-transparent bg-clip-text" >Central de Apostas</p>
+            <p className="font-lethalforce text-[16px] lg:text-4xl my-[2%] lg:my-[2%] bg-gradient-to-b from-green-400 to-green-800 inline-block text-transparent bg-clip-text" >{changeComponent? 'Minha Carteira' : 'Minhas Apostas'}</p>
             { changeComponent ? (<Wallet onReturn={tableChange}/>) : (<>
             <div className="flex flex-col lg:flex-row w-10/12 max-w-[1140px] items-center justify-between px-2 py-2 my-[1%] bg-white rounded-xl gap-2">
-                <div className="flex gap-2 w-full lg:w-auto flex-wrap">
+                <div className="flex gap-2 w-full lg:w-auto">
                     <div className="w-full md:w-72 flex ">
                         <Input
                             crossOrigin={undefined}
@@ -182,11 +198,14 @@ const Landing = () => {
                             onChange={(e) => setIdSearch(e.target.value)}
                         />
                     </div>
-                    <Button onClick={() => search()} className="flex items-center w-full lg:w-auto" size="sm">
-                        Buscar
+                    <Button onClick={() => search()} className="flex items-center" size="sm">
+                        <MagnifyingGlassIcon className="h-5 w-5" />
                     </Button>
                 </div>
                 <div className="flex gap-2 flex-col lg:flex-row w-full lg:w-auto">
+                    <Button onClick={handleOpenFilter} className="flex items-center" size="sm">
+                        FIltro
+                    </Button>
                     <Button onClick={tableChange} className="flex items-center" size="sm">
                         Carteira
                     </Button>
@@ -195,8 +214,9 @@ const Landing = () => {
                     </Button>
                 </div>
             </div>
-            <div className="flex items-center justify-center max-w-[1140px] w-full mb-[2%]">
-                <Card className="h-full w-10/12 lg:w-full overflow-x-scroll p-4">
+            <div className="flex items-center justify-center max-w-[1140px] w-10/12 mb-[2%]">
+                <Card className="h-full w-full lg:w-full overflow-x-auto p-4">
+                    {dataBets.data.length > 0 ?(<>
                     <table className="w-full min-w-max table-auto text-left">
                         <thead>
                             <tr>
@@ -255,6 +275,9 @@ const Landing = () => {
                             <button onClick={() => paginationHandler('last')} className="bg-green-500 px-2 rounded-md text-white">{'>>'}</button>
                         </div>
                     </div>
+                    </>):(<div className="w-full flex items-center justify-center h-96">
+                        <p className="font-lethalforce text-[16px] lg:text-4xl my-[2%] lg:my-[2%] bg-gradient-to-b from-green-400 to-green-800 inline-block text-transparent bg-clip-text" >Nenhum dado encontrado</p>
+                    </div>)}
                 </Card>
             </div>
             <Dialog
@@ -317,6 +340,29 @@ const Landing = () => {
                             Apostar
                         </Button>
                     </CardFooter>
+                </Card>
+            </Dialog>
+            <Dialog
+                size="xs"
+                open={openFilter}
+                handler={handleOpenFilter}
+                className="bg-transparent shadow-none"
+            >
+                <Card className="mx-auto w-full max-w-[24rem] max-h-[600px] lg:max-h-full overflow-auto">
+                    <CardBody className="flex flex-col gap-4">
+                        <Button onClick={() => searchByType(undefined)} variant="gradient" fullWidth>
+                            Todos
+                        </Button>
+                        <Button onClick={() => searchByType('lost')} color="red" variant="gradient" fullWidth>
+                            Perdeu
+                        </Button>
+                        <Button onClick={() => searchByType('win')} color="green" variant="gradient" fullWidth>
+                            Ganhou
+                        </Button>
+                        <Button onClick={() => searchByType('canceled')} color='orange' variant="gradient" fullWidth>
+                            cancelado
+                        </Button>
+                    </CardBody>
                 </Card>
             </Dialog>
         </>)}
